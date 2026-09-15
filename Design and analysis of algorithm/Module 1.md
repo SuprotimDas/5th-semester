@@ -654,7 +654,7 @@ for smaller values k<nk<n.
 
 Since:
 
-n2<n\frac n2<n
+n2<n\frac n2< n
 
 we can apply the hypothesis to T(n/2)T(n/2).
 
