@@ -447,6 +447,116 @@ Examples:
 
 They may never directly write SQL.
 
+# 6. Database Abstraction (Important Exam Concept)
+
+A database hides enormous implementation details (such as how bytes are physically stored on a disk) from the user by providing different levels of abstraction.
+
+The structural hierarchy flows as follows:
+
+$$\text{User} \rightarrow \text{External Level} \rightarrow \text{Conceptual Level} \rightarrow \text{Internal Level} \rightarrow \text{Storage}$$
+
+### 6.1 Physical / Internal Level
+
+- **Definition:** The lowest level of abstraction.
+    
+- **Purpose:** Describes how data is physically stored on the disk (e.g., data blocks, indexes, files, and storage structures).
+    
+- **Note:** Users generally do not need to concern themselves with these details.
+    
+
+### 6.2 Logical / Conceptual Level
+
+- **Definition:** Describes _what_ data is stored and the relationships between that data.
+    
+- **Example:** Defines tables and relations, such as:
+    
+    - `STUDENT` table structure (`Student_ID`, `Name`, `Age`, `Branch`)
+        
+    - Relationships like `STUDENT ─── enrolls ─── COURSE`
+        
+- **Note:** This level is independent of exact disk blocks.
+### 6.3 External / View Level
+
+- **Definition:** The highest level of abstraction. Different users see customized, restricted views of the same underlying database.
+    
+- **Examples of User Views:**
+    
+    - **Student View:** Name, Course, Marks
+        
+    - **Accounts View:** Name, Student_ID, Fees, Payment_Status
+        
+    - **Teacher View:** Student_ID, Name, Marks, Attendance
+        
+
+# 7. Database Architecture
+
+Depending on the syllabus, database architecture covers two primary perspectives: **Three-Schema Architecture** and **Tier/Client-Server Architecture**.
+
+### 7.1 Three-Schema Architecture
+
+Closely tied to database abstraction, it maps out three distinct schemas:
+
+1. **External Schema:** User-specific views.
+    
+2. **Conceptual Schema:** Overall logical structure.
+    
+3. **Internal Schema:** Physical storage structure.
+    
+
+### 7.2 Two-Tier Architecture
+
+- **Definition:** A client application communicates directly with the database server.
+    
+- **Flow:** `Client Application ──> Database Server ──> Database`
+    
+- **Example:** `Desktop Application ──> MySQL`
+    
+
+### 7.3 Three-Tier Architecture
+
+- **Definition:** Highly common in modern web applications, splitting logic across three layers.
+    
+- **Flow:** `Client ──> Application Server ──> Database Server`
+    
+- **Example:** `Browser / React ──> Express / Node.js ──> PostgreSQL`
+    
+- **Advantages:**
+    
+    - Better security
+    - Easier maintenance
+    - Better scalability
+    - Clear separation of business logic from UI and database
+
+# 10. Relational Database Constraints
+
+Constraints are rules that data must follow to prevent invalid data from entering the database. They are categorized into four major types: **Domain Constraint, Key Constraint, Entity Integrity, and Referential Integrity**.
+
+### 10.1 Domain Constraint
+
+- **Definition:** Each attribute must contain values exclusively from its permitted domain.
+- **Example:**  
+    - Attribute: `Age` (must be an integer)
+    - `Age = 20` (Valid)
+    - `Age = 25` (Valid)
+    - `Age = "Hello"` (Invalid)
+
+### 10.2 Key Constraint
+
+- **Definition:** A key should uniquely identify tuples according to the type of key being used.
+- **Example:** `Student_ID` should uniquely identify a student (e.g., 101 for Rahul, 102 for Priya, 103 for Amit). Two students cannot share the same `Student_ID` if it is designated as the primary key.
+
+### 10.3 Entity Integrity Constraint
+
+- **Definition:** The **primary key cannot be NULL**.  
+- **Reason:** Every row must be uniquely identifiable. If a primary key is NULL (e.g., `Student_ID = NULL`, `Name = Rahul`), the database cannot determine which specific student the row represents.
+### 10.4 Referential Integrity Constraint
+
+- **Definition:** This constraint applies to foreign keys to maintain consistency between related tables.
+- **Example Structure:**
+    - **DEPARTMENT:** `Dept_ID` (10, 20), `Dept_Name` (CSE, ECE)
+    - **STUDENT:** `Student_ID`, `Name`, `Dept_ID` (Foreign key referencing `DEPARTMENT.Dept_ID`)
+- **Rule:** You cannot insert a foreign key value that does not exist in the parent table (e.g., inserting `Student_ID = 103` with `Dept_ID = 99` would violate referential integrity if department 99 does not exist).
+
 #  ER Model
 
 The **Entity-Relationship (ER) model** is a conceptual blueprint of a database used before implementation. It represents **entities, attributes, relationships, and constraints**.
