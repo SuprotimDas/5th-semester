@@ -527,6 +527,40 @@ Closely tied to database abstraction, it maps out three distinct schemas:
     - Better scalability
     - Clear separation of business logic from UI and database
 
+## Important Relational Terminology
+
+- **Relation:** A relation is essentially a **table**.
+    
+- **Tuple:** A tuple represents a single **row** in a relation.
+    
+    - _Example:_ `101 | Rahul | CSE | 20` is one tuple.
+        
+- **Attribute:** An attribute represents a **column** in a relation.
+    
+    - _Example:_ `Student_ID`, `Name`, `Branch`, `Age`.
+        
+- **Domain:** The set of all permitted or valid values allowed for an attribute.
+    
+    - _Examples:_
+        
+        - `Age` $\rightarrow$ positive integers
+            
+        - `Branch` $\rightarrow$ `{CSE, ECE, EEE, ME}`
+            
+- **Degree:** The **number of attributes (columns)** in a relation.
+    
+    - _Example:_ If a relation has 4 attributes (`Student_ID`, `Name`, `Branch`, `Age`), its **degree = 4**.
+        
+- **Cardinality:** The **number of tuples (rows)** in a relation.
+    
+    - _Example:_ If a table contains 100 students, its **cardinality = 100**.
+        
+
+### 💡 Easy Memory Trick
+
+- **Degree** $\rightarrow$ **C**olumns (both start with consonants or use the alphabetical flow, but remember: Degree = Columns)
+    
+- **Cardinality** $\rightarrow$ **R**ows (or think of Cardinality counting the items)
 # 10. Relational Database Constraints
 
 Constraints are rules that data must follow to prevent invalid data from entering the database. They are categorized into four major types: **Domain Constraint, Key Constraint, Entity Integrity, and Referential Integrity**.
@@ -556,6 +590,57 @@ Constraints are rules that data must follow to prevent invalid data from enterin
     - **DEPARTMENT:** `Dept_ID` (10, 20), `Dept_Name` (CSE, ECE)
     - **STUDENT:** `Student_ID`, `Name`, `Dept_ID` (Foreign key referencing `DEPARTMENT.Dept_ID`)
 - **Rule:** You cannot insert a foreign key value that does not exist in the parent table (e.g., inserting `Student_ID = 103` with `Dept_ID = 99` would violate referential integrity if department 99 does not exist).
+
+## Keys in Relational Databases
+
+Keys are extremely important components of relational databases, categorized into six major types: **Super Key, Candidate Key, Primary Key, Alternate Key, Foreign Key, and Composite Key**.
+
+### 11.1 Super Key
+
+- **Definition:** Set of attributes that uniquely identifies a row in a relation.
+- **Example:** Given attributes `{ID, Email, Name}`, possible super keys include:
+    
+    - `{ID}`
+    - `{Email}`
+    - `{ID, Name}`
+    - `{ID, Email}`
+    - `{ID, Email, Name}`
+        
+- **Reason:** Each combination contains enough information to uniquely identify the row.
+### 11.2 Candidate Key
+
+- **Definition:** A **minimal** super key (a super key with no redundant attributes).
+- **Example:** If `{ID}` and `{Email}` both uniquely identify a student on their own, both are candidate keys. However, `{ID, Name}` is _not_ a candidate key because `{ID}` alone is already sufficient.
+### 11.3 Primary Key
+
+- **Definition:** A specific candidate key chosen by the database designer to uniquely identify tuples in a table.
+- **Properties:**
+    - Must be **Unique**
+    - **Cannot be NULL**
+    - Uniquely identifies each row
+
+### 11.4 Alternate Key
+
+- **Definition:** Candidate keys that were **not** selected as the primary key but they can also uniquely identify the tuple.
+- **Example:**
+    
+    - Candidate keys: `{Student_ID}`, `{Email}`
+    - Primary Key: `Student_ID`
+    - Alternate Key: `Email`
+
+### 11.5 Foreign Key
+
+- **Definition:** An attribute (or set of attributes) in one relation that references the primary key of another relation.
+    
+- **Example:**
+    
+    - **`STUDENT` table:** `Student_ID`, `Name`, `Dept_ID` (Foreign Key)
+    - **`DEPARTMENT` table:** `Dept_ID` (Primary Key), `Dept_Name`
+### 11.6 Composite Key
+
+- **Definition:** A primary key or candidate key consisting of **multiple attributes** combined to uniquely identify a row.
+    
+- **Example:** In an `ENROLLMENT` table (`Student_ID`, `Course_ID`, `Grade`), neither `Student_ID` nor `Course_ID` alone can uniquely identify an enrollment row. Together, the pair **`(Student_ID, Course_ID)`** forms a composite key.
 
 #  ER Model
 
