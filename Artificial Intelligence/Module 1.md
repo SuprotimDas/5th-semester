@@ -265,7 +265,7 @@ Find goal state
     
     1. **Global Database:** Represents the current state of the problem (facts/current configuration, e.g., `(jugA = 0, jugB = 0)`).
         
-    2. **Production Rules:** Condition-action pairs (`IF condition THEN action`) describing what actions can be performed and under what circumstances.
+    2. **Production Rules:** Condition-action pairs (`IF condition THEN action`) describing what actions can be performed under what circumstances.
         
     3. **Control Strategy:** The decision-making mechanism that chooses which applicable rule to execute next when multiple rules match.
 
@@ -283,20 +283,274 @@ The system loops continuously until a stopping condition is met:
 - **Stopping Conditions:** The cycle terminates when either:
     
     1. The **Goal Test is TRUE** (Goal achieved).
-        
     2. **No rule applies** (No applicable rules exist, even if the goal wasn't reached).
-        
 
 ### 3. Production System vs. State-Space Representation
 
 - **State Space:** Focuses on _what the states and transitions are_ (States + Operators + Goal + Cost).
     
 - **Production System:** Focuses on _how rules dictate actions_ (Database + Rules + Control Strategy).
+
+# 5. Search Space Control
+## Depth-First Search (DFS)
+
+### 1. What is DFS?
+
+- **Definition:** An uninformed search strategy that always explores the deepest unexpanded node first, backtracking when it hits a dead end.
     
-- **Quick Summary:**
+- **Core Philosophy:** Pick a branch, follow it as deep as possible until it stops, then backtrack and try the next branch.
+
+### 2. Implementation: The Stack (LIFO)
+
+- **Data Structure:** Uses a **Stack** operating on a **LIFO** (Last In, First Out) principle.
     
-    - Database = What we know.
-        
-    - Rules = What we can do.
-        
-    - Control = What to do next.
+- **Why a Stack?** By popping the most recently pushed node, the search is forced down the current branch.
+    
+- **Handling Order:** To preserve a left-to-right traversal order, children must be pushed onto the stack in **reverse order** (e.g., pushing C then B ensures B is popped first).
+
+### 3. Backtracking & The Visited Set
+
+- **Backtracking:** When a node has no children/unexplored paths (a dead end), DFS pops it and returns to the most recent node with unvisited branches.
+    
+- **Visited Set:** Essential for graph searches to prevent infinite loops (e.g., cycles) by skipping nodes that have already been processed.
+
+### 4. Complexity & Properties
+b = branching factor , m = maximum depth.
+
+- **Time Complexity:** O(b^m) (where b is the branching factor and m is the maximum depth). Grows exponentially.
+    
+- **Space Complexity:** O(b×m). Highly memory-efficient because it only stores the current path and pending siblings rather than the entire frontier.
+    
+- **Complete?** No (can get trapped in infinite or very deep branches even if a solution exists elsewhere).
+    
+- **Optimal?** No (does not guarantee the shortest or cheapest path).
+    
+
+```
+DFS(Graph, start):
+
+    create an empty stack
+    create a visited set
+
+    push start into stack
+
+    while stack is not empty:
+
+        node = pop(stack)
+
+        if node is not visited:
+            mark node as visited
+            print node
+
+            for each neighbor of node:
+                if neighbor is not visited:
+                    push neighbor into stack
+```
+
+Given:
+
+```
+        A
+       / \
+      B   C
+     / \
+    D   E
+```
+
+Goal = E.
+
+Start:
+
+```
+Stack = [A]
+```
+
+Pop A:
+
+```
+Visited = A
+```
+
+Push C then B:
+
+```
+Stack = [B,C]
+```
+
+Pop B:
+
+```
+Visited = A,B
+```
+
+Push E then D:
+
+```
+Stack = [D,E,C]
+```
+
+Pop D:
+
+```
+Visited = A,B,D
+```
+
+Dead end.
+
+Pop E:
+
+```
+Visited = A,B,D,E
+```
+
+Goal found.
+
+So:
+
+```
+DFS traversal until goal:
+A → B → D → E
+```
+
+Notice that DFS did **not** go:
+
+```
+A → B → E
+```
+
+immediately.
+
+It first explored B's left child D because DFS goes as deep as possible.
+
+### 5. Summary Table
+
+| Property                | DFS Characteristic                                              |
+| ----------------------- | --------------------------------------------------------------- |
+| **Strategy**            | Go as deep as possible                                          |
+| **Data Structure**      | Stack (LIFO)                                                    |
+| **Backtracking**        | Yes                                                             |
+| **Time Complexity**     | O(b^m)                                                          |
+| **Space Complexity**    | O(b.m)                                                          |
+| **Complete / Optimal?** | No / No                                                         |
+| **Main Advantage**      | Low memory usage                                                |
+| **Main Weakness**       | Can loop on deep/infinite branches; finds non-optimal solutions |
+
+## Breadth-First Search (BFS)
+
+### 1. What is BFS?
+
+- **Definition:** An uninformed search strategy that explores a problem space level by level, expanding all nodes at depth $d$ before moving to depth $d+1$.
+
+- **Core Philosophy:** Spread wide across the current level rather than diving deep into a single branch.
+
+### 2. Implementation: The Queue (FIFO)
+
+- **Data Structure:** Uses a **Queue** operating on a **FIFO** (First In, First Out) principle.
+
+- **Why a Queue?** By processing older elements first, nodes wait their turn in line, ensuring that sibling nodes at the same level are fully explored before any children at deeper levels are touched.
+
+- **Handling Order:** Unlike DFS, BFS does **not** require reversing child order. Children can be enqueued in standard left-to-right order because the FIFO queue naturally preserves level-order sequence.
+### 3. The Visited Set & Queue Mechanics
+
+- **Visited Tracking:** Marks nodes as visited at the moment they are _enqueued_ (unlike DFS which marks them upon _popping_). This prevents duplicate entries and handles cycles safely.
+
+- **Frontier:** The set of discovered, unexpanded nodes currently sitting in the queue waiting to be processed.
+
+### 4. Complexity & Properties
+
+- **Time Complexity:** $\mathcal{O}(b^d)$ (where $b$ is the branching factor and $d$ is the depth of the shallowest goal).
+- **Space Complexity:** $\mathcal{O}(b^d)$. Because BFS must hold the entire frontier (all waiting nodes at the current/next level) in memory, it is **memory-hungry**.
+    
+- **Complete?** Yes (guaranteed to find a solution if one exists, provided the branching factor $b$ is finite).
+   
+- **Optimal?** Yes, **for unit-cost edges** (because the first goal encountered is the shallowest, meaning it uses the fewest equal-cost steps).
+    
+
+```
+BFS(Graph, start):
+
+    create an empty queue
+    create a visited set
+
+    enqueue start into queue
+    mark start as visited
+
+    while queue is not empty:
+
+        node = dequeue from queue
+        print node
+
+        for each neighbor of node:
+            if neighbor is not visited:
+                mark neighbor as visited
+                enqueue neighbor into queue
+```
+
+### 5. Summary Table: DFS vs. BFS
+
+|**Feature**|**DFS (Depth-First Search)**|**BFS (Breadth-First Search)**|
+|---|---|---|
+|**Data Structure**|Stack|Queue|
+|**Operation Principle**|LIFO (Last In, First Out)|FIFO (First In, First Out)|
+|**Strategy**|Go as deep as possible|Go level by level (wide)|
+|**Backtracking**|Yes|No (handled by queue order)|
+|**Time Complexity**|$\mathcal{O}(b^m)$|$\mathcal{O}(b^d)$|
+|**Space Complexity**|$\mathcal{O}(bm)$|$\mathcal{O}(b^d)$|
+|**Complete?**|No (can loop infinitely)|Yes (if $b$ is finite)|
+|**Optimal?**|No|Yes (for unit-cost edges)|
+|**Main Advantage**|Low memory usage ($\mathcal{O}(bm)$)|Finds the shallowest/shortest path|
+|**Main Weakness**|Can get stuck; non-optimal|High memory consumption ($\mathcal{O}(b^d)$)|
+
+
+# Hill climbing and Best First Search
+### 1. Why Heuristic Search?
+
+- **The Limitation of Blind Search:** DFS and BFS are "blind" because they follow strict structural rules without knowing which direction actually gets closer to the goal.
+
+- **The Solution:** Use problem-specific knowledge via a **heuristic function**, $h(n)$, which estimates the remaining cost (or distance) from node $n$ to the goal. Lower $h(n)$ values mean a state looks more promising.
+
+### 2. Hill Climbing
+
+- **Definition:** A greedy local search algorithm that inspects immediate neighboring states, moves to the neighbor with the highest value (or best heuristic score), and stops when no neighbor is better.
+
+- **The Numeric Example Summary:** Starting at $x=0$ ($f=2$), it moves sequentially to $x=1$ ($3$), $x=2$ ($4$), $x=3$ ($6$), $x=4$ ($7$), and $x=5$ ($9$), where it stops because both neighboring points have lower values ($7$).
+
+- **The Major Flaw:** **Local Maxima.** Because it is short-sighted and looks _only_ at immediate neighbors, it can get trapped on a local peak and miss the true global maximum.
+
+- **Escape Strategies:**  
+    1. _Random Restarts_ (starting over from different points).
+    
+    2. _Simulated Annealing_ (occasionally accepting worse moves to escape traps).
+    
+    3. _Tabu Search_ (maintaining a memory of visited states to avoid looping).
+### 3. Best-First Search
+
+- **Definition:** An informed search that evaluates all available candidates in the **entire frontier** (using a **priority queue**) and expands the node with the **lowest $h(n)$**.
+
+>Look at all currently available candidates and expand the one that looks best according to the heuristic.
+
+- **Hill Climbing vs. Best-First Search:**      
+    - _Hill Climbing:_ Local scope (looks _only_ at immediate neighbors).
+    
+    - _Best-First Search:_ Global frontier scope (evaluates all currently discovered, unexpanded nodes).
+    
+- **Worked Example Result:** Starting at $A(6)$, it expands to $C(3)$ over $B(4)$, then directly to the goal $G(0)$, requiring only 3 expansions.
+
+- **Limitation:** Relying solely on $h(n)$ ignores the cost already spent ($g(n)$), meaning the heuristic can sometimes mislead the search, and it does not guarantee the shortest path.
+
+### 4. Manhattan Distance Heuristic (8-Puzzle)
+
+- **Formula:** $h(n) = \sum (\mid \text{current row} - \text{goal row} \mid + \mid \text{current column} - \text{goal column} \mid)$ for all numbered tiles (excluding the blank space).
+    
+      
+    
+- **Purpose:** Provides a straightforward numerical estimate of how far a puzzle configuration is from the target layout, allowing the algorithm to prioritize more promising board states.
+    
+
+### 5. Summary Table: Blind vs. Heuristic Search
+
+|**Feature**|**DFS / BFS (Blind)**|**Hill Climbing (Heuristic)**|**Best-First Search (Heuristic)**|
+|---|---|---|---|
+|**Guidance**|Structural rules only|Local neighbors via heuristic|Entire frontier via $h(n)$|
+|**Data Structure**|Stack / Queue|None (local tracking)|Priority Queue|
+|**Main Weakness**|Explores many unnecessary / deep nodes|Gets trapped at local maxima|Heuristic can mislead; ignores $g(n)$|
