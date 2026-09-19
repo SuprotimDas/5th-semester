@@ -198,15 +198,105 @@ Solving complex problems in AI relies on three foundational pillars working toge
         
 2. **Knowledge:** Representing facts and rules about the world so the system can reason and make decisions (e.g., combining facts and rules to deduce outcomes, as seen in theorem proving and expert systems).
     
-3. **Abstraction:** Removing irrelevant real-world details (like traffic, weather, or driver fatigue) to make a problem manageable.
+3. **Abstraction:** Removing irrelevant real-world details (like traffic, weather, or driver fatigue) to make a problem manageable to search.
     
     - _Example:_ Simplifying a map by representing towns as nodes and roads as edges with costs, turning it into a graph-search problem.
         
 
-### 3. How They Work Together
+### How They Work Together
 
 - **Abstraction** simplifies the real-world problem into a manageable formal representation.
     
 - **Knowledge** provides the background facts and rules governing that problem domain.
     
 - **Search** explores the possibilities within that framework to find the final solution.
+
+# 4. State Space Representation & Search Problem Components
+
+### 1. State Space Representation
+
+- **State:** A formal representation of the situation at a particular point in a problem (e.g., chess piece arrangement, or water amounts in jugs like `(3,2)`).
+    
+- **State Space:** The collection of _all_ possible states for the problem.
+### 2. The Four Components of a Search Problem
+
+Every search problem is formally defined by these four core components:
+
+1. **Initial State:** The starting point where problem-solving begins (e.g., empty jugs `(0,0)`).
+    
+2. **Operators / Actions:** Legal moves that transform one state into another (e.g., applying "Fill B" to `(0,0)` yields `(0,3)`).
+    
+3. **Goal Test:** A condition used to determine whether the current state achieves the objective (e.g., checking if water in Jug A equals 2 liters, `x == 2`).
+    
+4. **Path Cost:** A numeric cost assigned to a sequence of actions (e.g., assigning a cost of 1 per operation, meaning 6 actions equals a path cost of 6).
+
+e.g. The Water Jug Problem
+
+Formal state-space definition 
+• State: (x, y) — litres currently in jug A (0-4), jug B (0-3) 
+• Initial state: (0, 0) 
+• Goal test: x = 2 
+• Operators: fill A, fill B, empty A, empty B, 
+ pour A→B, pour B→A (6 operators) 
+  - Path cost: 1 per operator applied (we count total steps)
+## State-Space Search
+
+### 1. What is State-Space Search?
+
+- **Definition:** Searching through all possible problem states to find a sequence of actions that transforms the **initial state** into a **goal state**.
+
+```
+Initial State
+     ↓
+Generate possible states
+     ↓
+Search through state space
+     ↓
+Find goal state
+```
+
+## Production Systems
+
+### 1. What is a Production System?
+
+- **Definition:** A problem-solving framework driven by a rule-based architecture.
+    
+- **The Three Core Components:**
+    
+    1. **Global Database:** Represents the current state of the problem (facts/current configuration, e.g., `(jugA = 0, jugB = 0)`).
+        
+    2. **Production Rules:** Condition-action pairs (`IF condition THEN action`) describing what actions can be performed and under what circumstances.
+        
+    3. **Control Strategy:** The decision-making mechanism that chooses which applicable rule to execute next when multiple rules match.
+
+### 2. The Production System Execution Cycle
+
+The system loops continuously until a stopping condition is met:
+
+1. Look at the current database.
+2. Find rules whose conditions match.
+3. Control strategy selects a rule to fire.
+4. Apply the rule's action.
+5. Update the database.
+6. Repeat.
+
+- **Stopping Conditions:** The cycle terminates when either:
+    
+    1. The **Goal Test is TRUE** (Goal achieved).
+        
+    2. **No rule applies** (No applicable rules exist, even if the goal wasn't reached).
+        
+
+### 3. Production System vs. State-Space Representation
+
+- **State Space:** Focuses on _what the states and transitions are_ (States + Operators + Goal + Cost).
+    
+- **Production System:** Focuses on _how rules dictate actions_ (Database + Rules + Control Strategy).
+    
+- **Quick Summary:**
+    
+    - Database = What we know.
+        
+    - Rules = What we can do.
+        
+    - Control = What to do next.
