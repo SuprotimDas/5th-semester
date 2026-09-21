@@ -462,7 +462,6 @@ $$\text{User} \rightarrow \text{External Level} \rightarrow \text{Conceptual Lev
 - **Purpose:** Describes how data is physically stored on the disk (e.g., data blocks, indexes, files, and storage structures).
     
 - **Note:** Users generally do not need to concern themselves with these details.
-    
 
 ### 6.2 Logical / Conceptual Level
 
